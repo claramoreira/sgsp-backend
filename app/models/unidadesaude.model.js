@@ -5,24 +5,29 @@ const UnidadeSaude = function (us) {
     this.nome = us.nome;
     this.endereco = us.endereco;
     this.tipo = us.tipo;
+    this.categoria = us.categoria;
+    this.cep = us.cep;
+    this.telefone = us.telefone;
+    this.descricao = us.descricao;
+    this.status = us.status;
 };
 
 UnidadeSaude.create = (novaUS, result) => {
+    novaUS.status = 1;
     sql.query("INSERT INTO UNIDADES_SAUDE SET ?", novaUS, (err, res) => {
-
         if (err) {
             console.log("Erro: ", err);
             result(err, null);
             return;
         }
-
-        console.log("US criada: ", { id: res.insertId, ...novaUS });
-        result(null, { id: res.insertId, ...novaUS });
+        console.log("US criada: ", { id_unidade_saude: res.insertId, ...novaUS });
+        result(null, { id_unidade_saude: res.insertId, ...novaUS });
     });
 };
 
 UnidadeSaude.findById = (us, result) => {
-    sql.query(`SELECT * FROM UNIDADES_SAUDE WHERE id_unidade_saude = ${us}`, (err, res) => {
+    sql.query(`SELECT * FROM UNIDADES_SAUDE WHERE id_unidade_saude = ${us}
+                AND STATUS = 1`, (err, res) => {
         if (err) {
             console.log("Erro: ", err);
             result(err, null);
@@ -40,13 +45,12 @@ UnidadeSaude.findById = (us, result) => {
 };
 
 UnidadeSaude.getAll = result => {
-    sql.query("SELECT * FROM UNIDADES_SAUDE", (err, res) => {
+    sql.query("SELECT * FROM UNIDADES_SAUDE WHERE STATUS = 1", (err, res) => {
         if (err) {
             console.log("Erro: ", err);
             result(null, err);
             return;
         }
-
         console.log("US: ", res);
         result(null, res);
     });
@@ -54,9 +58,9 @@ UnidadeSaude.getAll = result => {
 
 UnidadeSaude.updateById = (id, us, result) => {
     sql.query(
-        `UPDATE UNIDADES_SAUDE SET nome = ?, endereco = ?, tipo = ?
+        `UPDATE UNIDADES_SAUDE SET nome = ?, endereco = ?, tipo = ?, categoria = ?, cep = ?, telefone = ?, descricao = ?, STATUS = ?
         WHERE id_unidade_saude = ?`,
-        [us.nome, us.endereco, us.tipo, id],
+        [us.nome, us.endereco, us.tipo, us.categoria, us.cep, us.telefone, us.descricao, us.status, id],
         (err, res) => {
             if (err) {
                 console.log("Erro: ", err);
@@ -76,7 +80,7 @@ UnidadeSaude.updateById = (id, us, result) => {
 };
 
 UnidadeSaude.remove = (id, result) => {
-    sql.query("DELETE FROM UNIDADES_SAUDE WHERE id_unidade_saude = ?", id, (err, res) => {
+    sql.query("UPDATE UNIDADES_SAUDE SET status = 0 WHERE id_unidade_saude = ?", id, (err, res) => {
         if (err) {
             console.log("Erro: ", err);
             result(null, err);

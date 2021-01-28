@@ -13,7 +13,12 @@ exports.create = (req, res) => {
     const us = new UnidadeSaude({
         nome: req.body.nome,
         endereco: req.body.endereco,
-        tipo: req.body.tipo
+        tipo: req.body.tipo,
+        categoria: req.body.categoria,
+        cep: req.body.cep,
+        telefone: req.body.telefone,
+        descricao: req.body.descricao,
+        STATUS: req.body.status
     });
 
     // Save Customer in the database
@@ -67,7 +72,7 @@ exports.update = (req, res) => {
 
     UnidadeSaude.updateById(
         req.params.usId,
-        new Customer(req.body),
+        new UnidadeSaude(req.body),
         (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
